@@ -105,3 +105,97 @@ def clear_cache():
     with _cache_lock:
         _cached_services = None
     logger.info("Services cache cleared.")
+
+def save_contact_lead(lead_data):
+    """
+    Saves a contact lead to the Contact_Leads worksheet in Google Sheets.
+    Auto-increments the Lead_ID.
+    """
+    logger.info("Saving contact lead to Google Sheets...")
+    try:
+        scope = [
+            "https://spreadsheets.google.com/feeds",
+            "https://www.googleapis.com/auth/spreadsheets",
+            "https://www.googleapis.com/auth/drive.file",
+            "https://www.googleapis.com/auth/drive"
+        ]
+        
+        creds = ServiceAccountCredentials.from_json_keyfile_name(CREDENTIALS_FILE, scope)
+        client = gspread.authorize(creds)
+        
+        spreadsheet = client.open_by_key(SPREADSHEET_KEY)
+        worksheet = spreadsheet.worksheet("Contact_Leads")
+        
+        # Calculate next Lead_ID
+        records = worksheet.get_all_records()
+        max_id = 0
+        prefix = "LEAD-" # Default prefix if none is found
+        padding = 3
+        
+        for r in records:
+            lead_id_val = str(r.get('Lead_ID', '')).strip()
+            if not lead_id_val:
+                continue
+            
+            # Match formats like LEAD-001, LEAD-1, L-001, 12, etc.
+            import re
+            match = re.search(r'^(.*?)(\d+)$', lead_id_val)
+            if match:
+                pfx = match.group(1)
+                num_str = match.group(2)
+                val = int(num_str)
+                if val > max_id:
+                    max_id = val
+                    prefix = pfx
+                    padding = len(num_str)
+            else:
+                try:
+                    val = int(lead_id_val)
+                    if val > max_id:
+                        max_id = val
+                        prefix = ""
+                        padding = 0
+                except ValueError:
+                    pass
+        
+        # Determine next ID
+        next_num = max_id + 1
+        if prefix or padding:
+            next_id = f"{prefix}{str(next_num).zfill(padding)}"
+        else:
+            if max_id == 0:
+                next_id = "LEAD-001"
+            else:
+                next_id = str(next_num)
+                
+        # Get lead fields
+        client_name = lead_data.get('client_name', '').strip()
+        client_mail = lead_data.get('client_mail', '').strip()
+        service_interested = lead_data.get('service_interested', '').strip()
+        budget_range = lead_data.get('budget_range', '').strip()
+        requirement_details = lead_data.get('requirement_details', '').strip()
+        lead_status = "New"
+        
+        import datetime
+        timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        
+        # Order of columns: Lead_ID, Client_Name, Client_Mail, Service_Interested, Budget_Range, Requirement_details, Lead_status, Timestamp
+        row_to_append = [
+            next_id,
+            client_name,
+            client_mail,
+            service_interested,
+            budget_range,
+            requirement_details,
+            lead_status,
+            timestamp
+        ]
+        
+        worksheet.append_row(row_to_append)
+        logger.info(f"Successfully saved lead {next_id} to Contact_Leads.")
+        return next_id
+        
+    except Exception as e:
+        logger.error(f"Failed to save contact lead to Google Sheets: {str(e)}")
+        raise e
+

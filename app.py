@@ -20,50 +20,35 @@ def contact():
         if not data:
             return jsonify({"status": "error", "message": "No data received."}), 400
         
-        name = data.get('name', '').strip()
-        email = data.get('email', '').strip()
-        message = data.get('message', '').strip()
+        client_name = data.get('client_name', '').strip()
+        client_mail = data.get('client_mail', '').strip()
+        service_interested = data.get('service_interested', '').strip()
+        budget_range = data.get('budget_range', '').strip()
+        requirement_details = data.get('requirement_details', '').strip()
         
-        if not name or not email or not message:
-            return jsonify({"status": "error", "message": "Name, Email, and Message are required."}), 400
+        if not client_name or not client_mail or not service_interested or not requirement_details:
+            return jsonify({
+                "status": "error", 
+                "message": "Name, Email, Service Interested, and Requirement Details are required."
+            }), 400
+            
+        # Log to server console
+        logging.info(f"New Lead Submission Received:\nName: {client_name}\nEmail: {client_mail}\nService: {service_interested}\nBudget: {budget_range}\nDetails: {requirement_details}")
         
-        # Log the message to the console
-        logging.info(f"New Contact Message Received:\nName: {name}\nEmail: {email}\nMessage: {message}")
+        # Save to Google Sheets
+        lead_id = services_sheet.save_contact_lead(data)
         
-        # Save to a local text file log for safety
+        # Save to a local text file log for safety backup
         os.makedirs('logs', exist_ok=True)
         with open('logs/submissions.txt', 'a', encoding='utf-8') as f:
             timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            f.write(f"[{timestamp}] Name: {name} | Email: {email} | Message: {message}\n")
+            f.write(f"[{timestamp}] ID: {lead_id} | Name: {client_name} | Email: {client_mail} | Service: {service_interested} | Budget: {budget_range} | Details: {requirement_details}\n")
         
-        # -------------------------------------------------------------
-        # FUTURE GOOGLE SHEETS DATABASE INTEGRATION REFERENCE
-        # -------------------------------------------------------------
-        # To connect to Google Sheets in the future, follow these steps:
-        # 1. Go to Google Cloud Console and create a project.
-        # 2. Enable the Google Drive and Google Sheets APIs.
-        # 3. Create a Service Account, generate a JSON key, and save it in your project folder as 'credentials.json'.
-        # 4. Share your Google Sheet with the client email found in 'credentials.json' (giving it Editor access).
-        # 5. Uncomment the code block below:
-        #
-        # import gspread
-        # from oauth2client.service_account import ServiceAccountCredentials
-        #
-        # scope = ["https://spreadsheets.google.com/feeds", 'https://www.googleapis.com/auth/spreadsheets',
-        #          "https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/drive"]
-        #
-        # creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
-        # client = gspread.authorize(creds)
-        #
-        # # Open the sheet by its name (make sure the name matches your Google Sheet name)
-        # sheet = client.open("Ankit Yadav Portfolio Leads").sheet1
-        #
-        # # Append the data to the sheet (Row: Timestamp, Name, Email, Message)
-        # timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        # sheet.append_row([timestamp, name, email, message])
-        # -------------------------------------------------------------
-        
-        return jsonify({"status": "success", "message": "Thank you! Your message has been received."}), 200
+        return jsonify({
+            "status": "success", 
+            "message": f"Thank you! Your inquiry has been successfully submitted (ID: {lead_id})."
+        }), 200
+
         
     except Exception as e:
         logging.error(f"Error handling contact submission: {str(e)}")

@@ -106,11 +106,13 @@ document.addEventListener('DOMContentLoaded', () => {
             formFeedback.textContent = '';
 
             // Get form values
-            const name = document.getElementById('name').value.trim();
-            const email = document.getElementById('email').value.trim();
-            const message = document.getElementById('message').value.trim();
+            const client_name = document.getElementById('client_name').value.trim();
+            const client_mail = document.getElementById('client_mail').value.trim();
+            const service_interested = document.getElementById('service_interested').value;
+            const budget_range = document.getElementById('budget_range').value;
+            const requirement_details = document.getElementById('requirement_details').value.trim();
 
-            if (!name || !email || !message) {
+            if (!client_name || !client_mail || !service_interested || !requirement_details) {
                 showFeedback('Please fill out all required fields.', 'error');
                 return;
             }
@@ -124,16 +126,22 @@ document.addEventListener('DOMContentLoaded', () => {
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ name, email, message })
+                    body: JSON.stringify({ 
+                        client_name, 
+                        client_mail, 
+                        service_interested, 
+                        budget_range, 
+                        requirement_details 
+                    })
                 });
 
                 const result = await response.json();
 
                 if (response.ok && result.status === 'success') {
-                    showFeedback(result.message || 'Message sent successfully!', 'success');
+                    showFeedback(result.message || 'Request submitted successfully!', 'success');
                     contactForm.reset();
                 } else {
-                    showFeedback(result.message || 'Failed to send message. Please try again.', 'error');
+                    showFeedback(result.message || 'Failed to submit request. Please try again.', 'error');
                 }
             } catch (err) {
                 console.error('Submission error:', err);
@@ -165,7 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } else {
             submitBtn.disabled = false;
-            if (btnText) btnText.textContent = 'Send Message';
+            if (btnText) btnText.textContent = 'Submit Request';
             if (btnIcon) {
                 btnIcon.setAttribute('data-lucide', 'send');
                 btnIcon.classList.remove('animate-spin');

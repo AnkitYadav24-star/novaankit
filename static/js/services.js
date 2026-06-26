@@ -58,6 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 // Setup filters and render UI
                 populateCategoryFilter();
+                populateServiceInterestedDropdown();
                 renderTable();
                 renderCategoriesCards();
             } else {
@@ -83,6 +84,44 @@ document.addEventListener('DOMContentLoaded', () => {
             option.value = category;
             option.textContent = category;
             categorySelect.appendChild(option);
+        });
+    }
+
+
+    /**
+     * Populates the service interested dropdown in the contact form dynamically
+     * Grouping options under category optgroup tags
+     */
+    function populateServiceInterestedDropdown() {
+        const serviceInterestedSelect = document.getElementById('service_interested');
+        if (!serviceInterestedSelect) return;
+
+        // Clear existing, keep placeholder
+        serviceInterestedSelect.innerHTML = '<option value="" disabled selected>Select a Service</option>';
+
+        // Group services by Category
+        const categories = {};
+        cachedServices.forEach(s => {
+            const cat = s.Category || 'Other';
+            if (!categories[cat]) {
+                categories[cat] = [];
+            }
+            categories[cat].push(s);
+        });
+
+        // Append optgroups and options
+        Object.keys(categories).forEach(cat => {
+            const optgroup = document.createElement('optgroup');
+            optgroup.label = cat;
+
+            categories[cat].forEach(s => {
+                const option = document.createElement('option');
+                option.value = s.Service_name;
+                option.textContent = s.Service_name;
+                optgroup.appendChild(option);
+            });
+
+            serviceInterestedSelect.appendChild(optgroup);
         });
     }
 

@@ -1,2 +1,6 @@
 [2026-06-26 16:27:13] Name: Test User | Email: test@example.com | Message: Hi, verifying the portfolio contact form.
 [2026-06-26 17:06:32] Name: 8yuiyi | Email: uuiusiodf@gmail.com | Message: sadfsadfsdf
+[2026-06-26 21:54:40] ID: LEAD-001 | Name: Test Client | Email: client@test.com | Service: Flutter App | Budget: ₹25,000 - ₹50,000 | Details: Need a Flutter mobile application for my startup business.
+[2026-06-26 21:57:16] ID: LEAD-002 | Name: Test Client | Email: client@test.com | Service: Flutter App | Budget: ₹25,000 - ₹50,000 | Details: Need a Flutter mobile application for my startup business.
+[2026-06-26 22:00:31] ID: LEAD-003 | Name: Test Client | Email: client@test.com | Service: Flutter App | Budget: ₹25,000 - ₹50,000 | Details: Need a Flutter mobile application for my startup business.
+[2026-06-26 22:04:15] ID: LEAD-004 | Name: Demo User | Email: demo@gmail.com | Service: Portfolio Website | Budget: Under ₹10,000 | Details: kam chalau bna de bas
