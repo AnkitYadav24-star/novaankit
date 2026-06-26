@@ -1,4 +1,5 @@
 import os
+import json
 import logging
 import threading
 import gspread
@@ -11,6 +12,34 @@ logger = logging.getLogger(__name__)
 CREDENTIALS_FILE = "portfolio.json"
 SPREADSHEET_KEY = "1AJwa8cO5H6AvMBo0t0msFtAgqEAfCI_mXPLaxdFnK6M"
 WORKSHEET_NAME = "Services_Pricing"
+
+def _get_credentials(scope):
+    """
+    Retrieves Google Service Account credentials.
+    Priority:
+    1. Local portfolio.json file.
+    2. Google_Credencials environment variable.
+    
+    Raises FileNotFoundError if both are missing.
+    """
+    if os.path.exists(CREDENTIALS_FILE):
+        logger.info(f"Loading credentials from local file '{CREDENTIALS_FILE}'...")
+        return ServiceAccountCredentials.from_json_keyfile_name(CREDENTIALS_FILE, scope)
+        
+    env_creds = os.environ.get("Google_Credencials")
+    if env_creds:
+        logger.info("Loading credentials from environment variable 'Google_Credencials'...")
+        try:
+            creds_dict = json.loads(env_creds)
+            return ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
+        except Exception as e:
+            logger.error(f"Failed to parse 'Google_Credencials' environment variable as JSON: {str(e)}")
+            raise e
+            
+    # If both are missing, log and raise error
+    err_msg = "Google_Credencials environment variable is missing."
+    logger.error(err_msg)
+    raise FileNotFoundError(err_msg)
 
 # In-memory cache variables
 _cached_services = None
@@ -43,11 +72,7 @@ def get_services(refresh=False):
             "https://www.googleapis.com/auth/drive"
         ]
         
-        # Verify credentials file exists
-        if not os.path.exists(CREDENTIALS_FILE):
-            raise FileNotFoundError(f"Credentials file '{CREDENTIALS_FILE}' not found. Please place it in the project root.")
-            
-        creds = ServiceAccountCredentials.from_json_keyfile_name(CREDENTIALS_FILE, scope)
+        creds = _get_credentials(scope)
         client = gspread.authorize(creds)
         
         # Open by key is direct and robust
@@ -120,7 +145,7 @@ def save_contact_lead(lead_data):
             "https://www.googleapis.com/auth/drive"
         ]
         
-        creds = ServiceAccountCredentials.from_json_keyfile_name(CREDENTIALS_FILE, scope)
+        creds = _get_credentials(scope)
         client = gspread.authorize(creds)
         
         spreadsheet = client.open_by_key(SPREADSHEET_KEY)
