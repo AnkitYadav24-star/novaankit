@@ -2,6 +2,7 @@ import os
 import logging
 import datetime
 from flask import Flask, render_template, request, jsonify
+import services_sheet
 
 # Set up logging to track contact messages
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -67,6 +68,17 @@ def contact():
     except Exception as e:
         logging.error(f"Error handling contact submission: {str(e)}")
         return jsonify({"status": "error", "message": "An internal error occurred. Please try again later."}), 500
+
+@app.route('/api/services')
+def get_services():
+    try:
+        # Check if refresh is requested
+        refresh = request.args.get('refresh', 'false').lower() == 'true'
+        services = services_sheet.get_services(refresh=refresh)
+        return jsonify({"status": "success", "data": services}), 200
+    except Exception as e:
+        logging.error(f"Error serving services API: {str(e)}")
+        return jsonify({"status": "error", "message": "Unable to load Services. Please try again later."}), 500
 
 if __name__ == '__main__':
     # Start the server on host 0.0.0.0, port 5000

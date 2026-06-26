@@ -1,0 +1,23 @@
+# Credentials & secrets
+portfolio.json
+
+# Local logs
+logs/
+
+# Python environment artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+env/
+.env
+
+# Editor files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
