@@ -18,7 +18,7 @@ def _get_credentials(scope):
     Retrieves Google Service Account credentials.
     Priority:
     1. Local portfolio.json file.
-    2. Google_Credencials environment variable.
+    2. Environment variables (tries Google_Credencials, Google_Credentials, GOOGLE_CREDENTIALS).
     
     Raises FileNotFoundError if both are missing.
     """
@@ -26,20 +26,35 @@ def _get_credentials(scope):
         logger.info(f"Loading credentials from local file '{CREDENTIALS_FILE}'...")
         return ServiceAccountCredentials.from_json_keyfile_name(CREDENTIALS_FILE, scope)
         
-    env_creds = os.environ.get("Google_Credencials")
+    # Check multiple variants for typo safety (c vs t, uppercase vs lowercase)
+    env_keys = ["Google_Credencials", "Google_Credentials", "GOOGLE_CREDENTIALS"]
+    env_creds = None
+    matched_key = None
+    
+    for key in env_keys:
+        val = os.environ.get(key)
+        if val:
+            env_creds = val
+            matched_key = key
+            break
+            
     if env_creds:
-        logger.info("Loading credentials from environment variable 'Google_Credencials'...")
+        logger.info(f"Loading credentials from environment variable '{matched_key}'...")
         try:
             creds_dict = json.loads(env_creds)
             return ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
         except Exception as e:
-            logger.error(f"Failed to parse 'Google_Credencials' environment variable as JSON: {str(e)}")
+            logger.error(f"Failed to parse environment variable '{matched_key}' as JSON: {str(e)}")
             raise e
             
     # If both are missing, log and raise error
     err_msg = "Google_Credencials environment variable is missing."
     logger.error(err_msg)
+    # Log detailed debug info about checked keys to server output
+    logger.info(f"Checked local file: {CREDENTIALS_FILE} (Not Found)")
+    logger.info(f"Checked environment variables: {', '.join(env_keys)} (None Found)")
     raise FileNotFoundError(err_msg)
+
 
 # In-memory cache variables
 _cached_services = None
