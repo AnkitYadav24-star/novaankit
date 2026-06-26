@@ -63,7 +63,8 @@ def get_services():
         return jsonify({"status": "success", "data": services}), 200
     except Exception as e:
         logging.error(f"Error serving services API: {str(e)}")
-        return jsonify({"status": "error", "message": "Unable to load Services. Please try again later."}), 500
+        return jsonify({"status": "error", "message": f"Unable to load Services: {str(e)}"}), 500
+
 
 if __name__ == '__main__':
     # Start the server on host 0.0.0.0, port 5000
