@@ -48,12 +48,14 @@ def _get_credentials(scope):
             raise e
             
     # If both are missing, log and raise error
-    err_msg = "Google_Credencials environment variable is missing."
+    found_keys = [k for k in os.environ.keys() if k.lower().startswith('g') or 'cred' in k.lower()]
+    err_msg = f"Google_Credencials environment variable is missing. Checked: {env_keys}. Found env keys: {found_keys}"
     logger.error(err_msg)
     # Log detailed debug info about checked keys to server output
     logger.info(f"Checked local file: {CREDENTIALS_FILE} (Not Found)")
     logger.info(f"Checked environment variables: {', '.join(env_keys)} (None Found)")
     raise FileNotFoundError(err_msg)
+
 
 
 # In-memory cache variables
