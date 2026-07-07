@@ -59,6 +59,7 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/services.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/softwares_apps.css') }}">
 
     <!-- Lucide Icons CDN -->
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -78,6 +79,7 @@
                 <a href="#home" class="nav-link active">Home</a>
                 <a href="#services" class="nav-link">Services</a>
                 <a href="#pricing" class="nav-link">Pricing</a>
+                <a href="#softwares-apps" class="nav-link">Softwares & Apps</a>
                 <a href="#about" class="nav-link">About</a>
                 <a href="#contact" class="nav-link nav-cta">Let's Connect</a>
             </div>
@@ -225,13 +227,15 @@
             <div class="section-header">
                 <span class="section-tag">Pricing</span>
                 <h2 class="section-title">Services & Pricing</h2>
-                <p class="section-subtitle">Transparent rates and clear deliverables mapped directly from Google Sheets.</p>
+                <p class="section-subtitle">Transparent rates and clear deliverables mapped directly from Google Sheets.
+                </p>
             </div>
 
             <!-- Pricing Controls (Search & Category Filter) -->
             <div class="pricing-controls">
                 <div class="search-wrapper">
-                    <input type="text" id="services-search" class="search-input" placeholder="Search by service, deliverables, or category...">
+                    <input type="text" id="services-search" class="search-input"
+                        placeholder="Search by service, deliverables, or category...">
                     <i data-lucide="search"></i>
                 </div>
                 <div class="filter-wrapper">
@@ -265,10 +269,38 @@
             <div class="categories-sub-header section-header">
                 <span class="section-tag">Overview</span>
                 <h2 id="category-section-title" class="section-title">Service Categories</h2>
-                <p class="section-subtitle">Deep dive into our expert capabilities, standard workflows, and value propositions.</p>
+                <p class="section-subtitle">Deep dive into our expert capabilities, standard workflows, and value
+                    propositions.</p>
             </div>
-            
+
             <div id="categories-grid" class="categories-grid">
+                <!-- Populated dynamically via JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Softwares & Apps Section -->
+    <section id="softwares-apps" class="softwares-apps">
+        <div class="section-container">
+            <div class="section-header">
+                <span class="section-tag">Products</span>
+                <h2 class="section-title">Softwares & Apps</h2>
+                <p class="section-subtitle">Download professional desktop utilities and mobile apps designed to
+                    streamline your business and learning.</p>
+            </div>
+
+            <!-- Tabs switcher -->
+            <div class="products-tabs">
+                <button class="prod-tab-btn active" data-tab="softwares">
+                    <i data-lucide="terminal"></i> Windows Softwares
+                </button>
+                <button class="prod-tab-btn" data-tab="apps">
+                    <i data-lucide="smartphone"></i> Mobile & Web Apps
+                </button>
+            </div>
+
+            <!-- Dynamic products container -->
+            <div class="products-container">
                 <!-- Populated dynamically via JS -->
             </div>
         </div>
@@ -370,13 +402,15 @@
 
                         <div class="form-group">
                             <label for="client_mail">Your Email</label>
-                            <input type="email" id="client_mail" name="client_mail" placeholder="john@example.com" required>
+                            <input type="email" id="client_mail" name="client_mail" placeholder="john@example.com"
+                                required>
                         </div>
 
                         <div class="form-group">
                             <label for="service_interested">Service Interested</label>
                             <div class="filter-wrapper" style="width: 100%; min-width: unset;">
-                                <select id="service_interested" name="service_interested" class="filter-select" style="font-weight: 500;" required>
+                                <select id="service_interested" name="service_interested" class="filter-select"
+                                    style="font-weight: 500;" required>
                                     <option value="" disabled selected>Select a Service</option>
                                     <option value="Web Development">Web Development</option>
                                     <option value="App Development">App Development</option>
@@ -391,7 +425,8 @@
                         <div class="form-group">
                             <label for="budget_range">Budget Range</label>
                             <div class="filter-wrapper" style="width: 100%; min-width: unset;">
-                                <select id="budget_range" name="budget_range" class="filter-select" style="font-weight: 500;" required>
+                                <select id="budget_range" name="budget_range" class="filter-select"
+                                    style="font-weight: 500;" required>
                                     <option value="" disabled selected>Select Budget Range</option>
                                     <option value="Under ₹10,000">Under ₹10,000</option>
                                     <option value="₹10,000 - ₹25,000">₹10,000 - ₹25,000</option>
@@ -445,6 +480,7 @@
     <!-- Custom JS -->
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
     <script src="{{ url_for('static', filename='js/services.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/softwares_apps.js') }}"></script>
 </body>
 
 </html>
